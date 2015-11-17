@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='tasktiger-admin',
-    version='0.1',
+    version='0.1.1',
     url='http://github.com/closeio/tasktiger-admin',
     license='MIT',
     description='Admin for tasktiger, a Python task queue',
@@ -31,5 +31,6 @@ setup(
             'tasktiger-admin = tasktiger_admin.utils:run_admin',
         ],
     },
+    include_package_data=True,
     zip_safe=False,
 )
