@@ -1,0 +1,29 @@
+{% extends 'admin/master.html' %}
+{% block body %}
+
+<h2>TaskTiger</h2>
+
+<table class="metrics table table-striped table-bordered">
+    <thead>
+        <tr>
+            <th></th>
+            <th>Queued</th>
+            <th>Active</th>
+            <th>Scheduled</th>
+            <th>Error</th>
+        </tr>
+    </thead>
+    <tbody>
+{% for queue, stats in queue_stats %}
+        <tr>
+            <th>{{ queue }}</th>
+            <td><a href="{{ queue }}/queued/">{{ stats.queued }}</td>
+            <td><a href="{{ queue }}/active/">{{ stats.active }}</td>
+            <td><a href="{{ queue }}/scheduled/">{{ stats.scheduled }}</td>
+            <td><a href="{{ queue }}/error/">{{ stats.error }}</a></td>
+        </tr>
+{% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

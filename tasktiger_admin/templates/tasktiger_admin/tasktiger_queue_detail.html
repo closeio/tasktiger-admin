@@ -1,0 +1,42 @@
+{% extends 'admin/master.html' %}
+{% block body %}
+
+<h2><a href="../../">TaskTiger</a> – {{ queue }} ({{ state }}, {{ n }} items)</h2>
+{% if state == "error" %}
+    <form method="post" action="retry/">
+        <input type="submit" value="retry 50 latest tasks">
+    </form>
+{% endif %}
+
+<table class="metrics table table-striped table-bordered">
+    <thead>
+        <tr>
+            <th style="width:135px;">Timestamp</th>
+            <th style="min-width:135px;">Func</th>
+            <th style="min-width:135px;">Args</th>
+            <th style="min-width:135px;">Info</th>
+        </tr>
+    </thead>
+    <tbody>
+{% for task in tasks %}
+        <tr>
+            <td><a href="{{ task.id }}/">{{ task.ts.strftime("%Y-%m-%d %H:%M:%S") }}</a></td>
+            <td>{{ task.func }}</td>
+            <td>{{ task.args }} {{ task.kwargs }}</td>
+            <td>{% if task.executions %}{{ task.executions.0.exception_name }}{% endif %}
+                {% if state == "error" %}
+                    <br>
+                    <form method="post" action="{{ task.id }}/retry/" style="display:inline;">
+                        <input type="submit" value="retry">
+                    </form>
+                    <form method="post" action="{{ task.id }}/delete/" style="display:inline;">
+                        <input type="submit" value="delete">
+                    </form>
+                {% endif %}
+            </td>
+        </tr>
+{% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

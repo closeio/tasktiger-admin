@@ -1,0 +1,26 @@
+{% extends 'admin/master.html' %}
+{% block body %}
+
+<h2><a href="../../../">TaskTiger</a> – <a href="../">{{ queue }} ({{ state }})</a></h2>
+
+<pre>{{ task_dumped }}</pre>
+
+{% if executions_dumped %}
+<p>Executions:</p>
+
+    <ul>
+
+        {% for execution_dumped, traceback in executions_dumped %}
+
+        <li><pre>{{ execution_dumped }}
+
+{{ traceback }}</pre>
+        </li>
+
+        {% endfor %}
+
+    </ul>
+
+{% endif %}
+
+{% endblock %}
