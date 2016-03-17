@@ -1,4 +1,4 @@
-from collections import defaultdict, OrderedDict
+from collections import OrderedDict
 from flask import redirect, url_for, abort
 from flask_admin import BaseView, expose
 import json
@@ -22,10 +22,13 @@ class TaskTigerView(BaseView):
 
         queue_stats_groups = []
         for group_name, queue_stats in groups.items():
-            group_stats = defaultdict(int)
+            group_stats = {}
             for queue, stats in queue_stats:
                 for stat_name, stat_num in stats.items():
-                    group_stats[stat_name] += stat_num
+                    if stat_name not in group_stats:
+                        group_stats[stat_name] = stat_num
+                    else:
+                        group_stats[stat_name] += stat_num
             queue_stats_groups.append((group_name, group_stats, queue_stats))
 
         return self.render('tasktiger_admin/tasktiger.html',
