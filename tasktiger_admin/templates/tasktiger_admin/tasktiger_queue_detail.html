@@ -1,4 +1,4 @@
-{% extends 'admin/master.html' %}
+{% extends 'admin/index.html' %}
 {% block body %}
 
 <h2><a href="../../">TaskTiger</a> – {{ queue }} ({{ state }}, {{ n }} items)</h2>
@@ -21,7 +21,7 @@
 {% for task in tasks %}
         <tr>
             <td><a href="{{ task.id }}/">{{ task.ts.strftime("%Y-%m-%d %H:%M:%S") }}</a></td>
-            <td>{{ task.func }}</td>
+            <td>{{ task.serialized_func }}</td>
             <td>{{ task.args }} {{ task.kwargs }}</td>
             <td>{% if task.executions %}{{ task.executions.0.exception_name }}{% endif %}
                 {% if state == "error" %}

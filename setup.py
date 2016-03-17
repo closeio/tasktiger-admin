@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='tasktiger-admin',
-    version='0.1.1',
+    version='0.2',
     url='http://github.com/closeio/tasktiger-admin',
     license='MIT',
     description='Admin for tasktiger, a Python task queue',
@@ -21,7 +21,7 @@ setup(
         'flask-admin',
         'redis',
         'structlog',
-        'tasktiger',
+        'tasktiger>=0.4',
     ],
     packages=[
         'tasktiger_admin',
