@@ -1,3 +1,4 @@
+from collections import defaultdict, OrderedDict
 from flask import redirect, url_for, abort
 from flask_admin import BaseView, expose
 import json
@@ -11,8 +12,24 @@ class TaskTigerView(BaseView):
     @expose('/')
     def index(self):
         queue_stats = self.tiger.get_queue_stats()
+        sorted_stats = sorted(queue_stats.items(), key=lambda k: k[0])
+        groups = OrderedDict()
+        for queue, stats in sorted_stats:
+            queue_base = queue.split('.')[0]
+            if queue_base not in groups:
+                groups[queue_base] = []
+            groups[queue_base].append((queue, stats))
+
+        queue_stats_groups = []
+        for group_name, queue_stats in groups.items():
+            group_stats = defaultdict(int)
+            for queue, stats in queue_stats:
+                for stat_name, stat_num in stats.items():
+                    group_stats[stat_name] += stat_num
+            queue_stats_groups.append((group_name, group_stats, queue_stats))
+
         return self.render('tasktiger_admin/tasktiger.html',
-                           queue_stats=queue_stats.items())
+                           queue_stats_groups=queue_stats_groups)
 
     @expose('/<queue>/<state>/retry/', methods=['POST'])
     def task_retry_multiple(self, queue, state):

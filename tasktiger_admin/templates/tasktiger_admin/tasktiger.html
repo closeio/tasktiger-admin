@@ -1,4 +1,4 @@
-{% extends 'admin/master.html' %}
+{% extends 'admin/index.html' %}
 {% block body %}
 
 <h2>TaskTiger</h2>
@@ -14,14 +14,30 @@
         </tr>
     </thead>
     <tbody>
-{% for queue, stats in queue_stats %}
+{% for group_name, group_stats, queue_stats in queue_stats_groups %}
+    {% if queue_stats|length > 1 %}
         <tr>
+            <th>{{ group_name }}</th>
+            <td>{{ group_stats.queued }}</td>
+            <td>{{ group_stats.active }}</td>
+            <td>{{ group_stats.scheduled }}</td>
+            <td>{{ group_stats.error }}</td>
+        </tr>
+    {% endif %}
+
+    {% for queue, stats in queue_stats %}
+        <tr>
+        {% if queue_stats|length > 1 %}
+            <td>&nbsp; {{ queue }}</td>
+        {% else %}
             <th>{{ queue }}</th>
+        {% endif %}
             <td><a href="{{ queue }}/queued/">{{ stats.queued }}</td>
             <td><a href="{{ queue }}/active/">{{ stats.active }}</td>
             <td><a href="{{ queue }}/scheduled/">{{ stats.scheduled }}</td>
             <td><a href="{{ queue }}/error/">{{ stats.error }}</a></td>
         </tr>
+    {% endfor %}
 {% endfor %}
     </tbody>
 </table>
