@@ -2,7 +2,7 @@ from collections import OrderedDict
 from flask import redirect, url_for, abort
 from flask_admin import BaseView, expose
 import json
-from tasktiger.task import Task
+from tasktiger import Task, TaskNotFound
 
 class TaskTigerView(BaseView):
     def __init__(self, tiger, *args, **kwargs):
@@ -45,10 +45,10 @@ class TaskTigerView(BaseView):
     @expose('/<queue>/<state>/<task_id>/')
     def task_detail(self, queue, state, task_id):
         LIMIT = 1000
-        task = Task.from_id(self.tiger, queue, state, task_id,
-                            load_executions=LIMIT)
-
-        if not task:
+        try:
+            task = Task.from_id(self.tiger, queue, state, task_id,
+                                load_executions=LIMIT)
+        except TaskNotFound:
             abort(404)
 
         executions_dumped = []
@@ -69,16 +69,18 @@ class TaskTigerView(BaseView):
 
     @expose('/<queue>/<state>/<task_id>/retry/', methods=['POST'])
     def task_retry(self, queue, state, task_id):
-        task = Task.from_id(self.tiger, queue, state, task_id)
-        if not task:
+        try:
+            task = Task.from_id(self.tiger, queue, state, task_id)
+        except TaskNotFound:
             abort(404)
         task.retry()
         return redirect(url_for('.queue_detail', queue=queue, state=state))
 
     @expose('/<queue>/<state>/<task_id>/delete/', methods=['POST'])
     def task_delete(self, queue, state, task_id):
-        task = Task.from_id(self.tiger, queue, state, task_id)
-        if not task:
+        try:
+            task = Task.from_id(self.tiger, queue, state, task_id)
+        except TaskNotFound:
             abort(404)
         task.delete()
         return redirect(url_for('.queue_detail', queue=queue, state=state))
