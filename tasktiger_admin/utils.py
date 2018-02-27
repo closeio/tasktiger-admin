@@ -1,4 +1,7 @@
+import os
+
 import click
+import dsnparse
 from flask import Flask
 from flask_admin import Admin
 import redis
@@ -15,9 +18,15 @@ from tasktiger_admin import TaskTigerView
 @click.option('-i', '--interface', help='Admin interface to listen on',
               default='127.0.0.1')
 def run_admin(host, port, db, password, listen, interface):
+    environ_dsn = os.environ.get('REDIS_URL', None)
+    if environ_dsn:
+        dsn_parsed = dsnparse.parse(environ_dsn)
+        host = host or dsn_parsed.host
+        port = port or dsn_parsed.port
+        password = dsn_parsed.password
     conn = redis.Redis(host, int(port or 6379), int(db or 0), password)
     tiger = TaskTiger(setup_structlog=True, connection=conn)
     app = Flask(__name__)
     admin = Admin(app, url='/')
     admin.add_view(TaskTigerView(tiger, name='TaskTiger', endpoint='tasktiger'))
-    app.run(debug=True, port=int(listen or 5000), host=interface)
+    app.run(debug=False, port=int(listen or 5000), host=interface)

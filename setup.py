@@ -18,6 +18,7 @@ setup(
     ],
     install_requires=[
         'click',
+        'dsnparse',
         'flask-admin',
         'redis',
         'structlog',
