@@ -1,5 +1,5 @@
 from collections import OrderedDict
-from flask import redirect, url_for, abort, current_app
+from flask import redirect, url_for, abort
 from flask_admin import BaseView, expose
 import json
 from tasktiger import Task, TaskNotFound
@@ -8,9 +8,10 @@ from .integrations import generate_integrations
 
 
 class TaskTigerView(BaseView):
-    def __init__(self, tiger, *args, **kwargs):
+    def __init__(self, tiger, integration_config=None, *args, **kwargs):
         super(TaskTigerView, self).__init__(*args, **kwargs)
         self.tiger = tiger
+        self.integration_config = integration_config
 
     @expose('/')
     def index(self):
@@ -54,20 +55,18 @@ class TaskTigerView(BaseView):
         except TaskNotFound:
             abort(404)
 
-        config = current_app.config.get('TASKTIGER_ADMIN', {})
-
         executions_dumped = []
         for execution in task.executions:
             traceback = execution.pop('traceback', None)
             execution_integrations = generate_integrations(
-                config.get('EXECUTION_INTEGRATION_LINKS', []),
+                self.integration_config.get('EXECUTION_INTEGRATION_LINKS', []),
                 task, execution)
             executions_dumped.append((
                 json.dumps(execution, indent=2, sort_keys=True),
                 traceback, execution_integrations)
             )
 
-        integrations = generate_integrations(config.get('INTEGRATION_LINKS', []),
+        integrations = generate_integrations(self.integration_config.get('INTEGRATION_LINKS', []),
                                              task, None)
 
         return self.render('tasktiger_admin/tasktiger_task_detail.html',
