@@ -4,19 +4,32 @@
 <h2><a href="../../../">TaskTiger</a> – <a href="../">{{ queue }} ({{ state }})</a></h2>
 
 <pre>{{ task_dumped }}</pre>
-
+{% if integrations %}
+    <p>Links:</p>
+    <ul>
+    {% for name, url in integrations %}
+        <li><a href="{{ url }}">{{ name }}</a> </li>
+    {% endfor %}
+    </ul>
+{% endif %}
 {% if executions_dumped %}
 <p>Executions:</p>
 
     <ul>
 
-        {% for execution_dumped, traceback in executions_dumped %}
+        {% for execution_dumped, traceback, execution_integrations in executions_dumped %}
 
         <li><pre>{{ execution_dumped }}
 
 {{ traceback }}</pre>
         </li>
-
+            {% if execution_integrations %}
+                <ul>
+                {% for name, url in execution_integrations %}
+                    <li><a href="{{ url }}">{{ name }}</a> </li>
+                {% endfor %}
+                </ul>
+            {% endif %}
         {% endfor %}
 
     </ul>

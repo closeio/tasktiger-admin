@@ -1,8 +1,11 @@
 from collections import OrderedDict
-from flask import redirect, url_for, abort
+from flask import redirect, url_for, abort, current_app
 from flask_admin import BaseView, expose
 import json
 from tasktiger import Task, TaskNotFound
+
+from .integrations import generate_integrations
+
 
 class TaskTigerView(BaseView):
     def __init__(self, tiger, *args, **kwargs):
@@ -51,13 +54,21 @@ class TaskTigerView(BaseView):
         except TaskNotFound:
             abort(404)
 
+        config = current_app.config.get('TASKTIGER_ADMIN', {})
+
         executions_dumped = []
         for execution in task.executions:
             traceback = execution.pop('traceback', None)
+            execution_integrations = generate_integrations(
+                config.get('EXECUTION_INTEGRATION_LINKS', []),
+                task, execution)
             executions_dumped.append((
                 json.dumps(execution, indent=2, sort_keys=True),
-                traceback)
+                traceback, execution_integrations)
             )
+
+        integrations = generate_integrations(config.get('INTEGRATION_LINKS', []),
+                                             task, None)
 
         return self.render('tasktiger_admin/tasktiger_task_detail.html',
             queue=queue,
@@ -65,6 +76,7 @@ class TaskTigerView(BaseView):
             task=task,
             task_dumped=json.dumps(task.data, indent=2, sort_keys=True),
             executions_dumped=executions_dumped,
+            integrations=integrations,
         )
 
     @expose('/<queue>/<state>/<task_id>/retry/', methods=['POST'])
