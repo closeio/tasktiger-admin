@@ -25,6 +25,17 @@ def _get_time(time_string, delta):
 
 
 def generate_integrations(integration_templates, task, execution):
+    """
+    Generate integration URLs.
+
+    Args:
+        task: TaskTiger task
+        execution: Task execution dictionary
+        integration_templates: List of integration templates
+
+    Returns:
+        list: List of tuples containing integration name and URL
+    """
     integrations = []
     for name, url_template in integration_templates:
         url_template = jinja2.Template(url_template)

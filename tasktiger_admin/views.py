@@ -9,6 +9,13 @@ from .integrations import generate_integrations
 
 class TaskTigerView(BaseView):
     def __init__(self, tiger, integration_config=None, *args, **kwargs):
+        """
+        TaskTiger admin view.
+
+        Args:
+            tiger: TaskTiger instance
+            integration_config: List of tuples containing integration name and URL
+        """
         super(TaskTigerView, self).__init__(*args, **kwargs)
         self.tiger = tiger
         self.integration_config = integration_config

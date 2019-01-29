@@ -28,3 +28,26 @@ details).
 For a more advanced integration, *tasktiger-admin* can be integrated in a Flask
 app with an existing flask-admin by using the provided view in
 ``tasktiger_admin.views.TaskTigerView``.
+
+
+Integration Links
+-----------------
+The ``TaskTigerView`` class takes an optional ``integration_config`` parameter
+that can be used to render integration links on the admin Task Detail page.
+These can be used to easily navigate to external resources like logging
+infrastructure or a Wiki. ``integration_config`` should be a list of tuples
+that specify the integration name and URL template.
+
+The URL template supports three variables:
+
+* ``task_id``: Current task id
+* ``execution_start``: Execution start time minus a 10 second buffer
+* ``execution_failed``: Execution failed time plus a 10 second buffer
+
+Example integration config that points to a logging website.
+.. code:: python
+
+  integration_config = [('Logs', 'https://logs.example.com/search/?'
+                                 'task_id={{ task_id }}&'
+                                 'start_time={{ execution_start }}&'
+                                 'end_time={{ execution_failed }}')]
