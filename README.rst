@@ -45,6 +45,7 @@ The URL template supports three variables:
 * ``execution_failed``: Execution failed time plus a 10 second buffer
 
 Example integration config that points to a logging website.
+
 .. code:: python
 
   integration_config = [('Logs', 'https://logs.example.com/search/?'
