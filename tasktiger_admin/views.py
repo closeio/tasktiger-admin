@@ -4,10 +4,21 @@ from flask_admin import BaseView, expose
 import json
 from tasktiger import Task, TaskNotFound
 
+from .integrations import generate_integrations
+
+
 class TaskTigerView(BaseView):
-    def __init__(self, tiger, *args, **kwargs):
+    def __init__(self, tiger, integration_config=None, *args, **kwargs):
+        """
+        TaskTiger admin view.
+
+        Args:
+            tiger: TaskTiger instance
+            integration_config: List of tuples containing integration name and URL
+        """
         super(TaskTigerView, self).__init__(*args, **kwargs)
         self.tiger = tiger
+        self.integration_config = integration_config
 
     @expose('/')
     def index(self):
@@ -54,10 +65,16 @@ class TaskTigerView(BaseView):
         executions_dumped = []
         for execution in task.executions:
             traceback = execution.pop('traceback', None)
+            execution_integrations = generate_integrations(
+                self.integration_config.get('EXECUTION_INTEGRATION_LINKS', []),
+                task, execution)
             executions_dumped.append((
                 json.dumps(execution, indent=2, sort_keys=True),
-                traceback)
+                traceback, execution_integrations)
             )
+
+        integrations = generate_integrations(self.integration_config.get('INTEGRATION_LINKS', []),
+                                             task, None)
 
         return self.render('tasktiger_admin/tasktiger_task_detail.html',
             queue=queue,
@@ -65,6 +82,7 @@ class TaskTigerView(BaseView):
             task=task,
             task_dumped=json.dumps(task.data, indent=2, sort_keys=True),
             executions_dumped=executions_dumped,
+            integrations=integrations,
         )
 
     @expose('/<queue>/<state>/<task_id>/retry/', methods=['POST'])
