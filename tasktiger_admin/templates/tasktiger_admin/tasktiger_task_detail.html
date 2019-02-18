@@ -8,7 +8,7 @@
     <p>Links:</p>
     <ul>
     {% for name, url in integrations %}
-        <li><a href="{{ url }}">{{ name }}</a> </li>
+        <li><a href="{{ url }}">{{ name }}</a></li>
     {% endfor %}
     </ul>
 {% endif %}
@@ -26,7 +26,7 @@
             {% if execution_integrations %}
                 <ul>
                 {% for name, url in execution_integrations %}
-                    <li><a href="{{ url }}">{{ name }}</a> </li>
+                    <li><a href="{{ url }}">{{ name }}</a></li>
                 {% endfor %}
                 </ul>
             {% endif %}
