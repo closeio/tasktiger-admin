@@ -10,11 +10,12 @@ from tasktiger_admin import TaskTigerView
 @click.option('-p', '--port', help='Redis server port')
 @click.option('-a', '--password', help='Redis password')
 @click.option('-n', '--db', help='Redis database number')
+@click.option('-H', '--listen-host', help='Admin host to listen on')
 @click.option('-l', '--listen', help='Admin port to listen on')
-def run_admin(host, port, db, password, listen):
+def run_admin(host, port, db, password, listen_host, listen):
     conn = redis.Redis(host, int(port or 6379), int(db or 0), password)
     tiger = TaskTiger(setup_structlog=True, connection=conn)
     app = Flask(__name__)
     admin = Admin(app, url='/')
     admin.add_view(TaskTigerView(tiger, name='TaskTiger', endpoint='tasktiger'))
-    app.run(debug=True, port=int(listen or 5000))
+    app.run(debug=True, host=listen_host, port=int(listen or 5000))
