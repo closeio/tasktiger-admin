@@ -20,7 +20,7 @@ setup(
         'click',
         'dsnparse',
         'flask-admin',
-        'redis',
+        'redis>=2,<3',
         'structlog',
         'tasktiger>=0.4',
     ],
