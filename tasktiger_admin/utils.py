@@ -20,7 +20,7 @@ from tasktiger_admin import TaskTigerView
 @click.option(
     '--structlog/--no-structlog', default=True, help='Enable/Disable structlog'
 )
-def run_admin(host, port, db, password, listen, interface, enable_structlog):
+def run_admin(host, port, db, password, listen, interface, **kwargs):
     environ_dsn = os.environ.get('REDIS_URL', None)
     if environ_dsn:
         dsn_parsed = dsnparse.parse(environ_dsn)
@@ -28,7 +28,7 @@ def run_admin(host, port, db, password, listen, interface, enable_structlog):
         port = port or dsn_parsed.port
         password = dsn_parsed.password
     conn = redis.Redis(host, int(port or 6379), int(db or 0), password)
-    tiger = TaskTiger(setup_structlog=enable_structlog, connection=conn)
+    tiger = TaskTiger(setup_structlog=kwargs['structlog'], connection=conn)
     app = Flask(__name__)
     admin = Admin(app, url='/')
     admin.add_view(TaskTigerView(tiger, name='TaskTiger', endpoint='tasktiger'))
