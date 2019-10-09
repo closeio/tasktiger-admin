@@ -1,7 +1,8 @@
-from collections import OrderedDict
-from flask import redirect, url_for, abort
-from flask_admin import BaseView, expose
 import json
+from collections import OrderedDict
+
+from flask import abort, redirect, url_for
+from flask_admin import BaseView, expose
 from tasktiger import Task, TaskNotFound
 
 from .integrations import generate_integrations

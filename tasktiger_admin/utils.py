@@ -1,7 +1,8 @@
 import click
+
+import redis
 from flask import Flask
 from flask_admin import Admin
-import redis
 from tasktiger import TaskTiger
 from tasktiger_admin import TaskTigerView
 

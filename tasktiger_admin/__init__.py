@@ -1,4 +1,5 @@
 from flask import Blueprint
+
 from .views import TaskTigerView
 
 __all__ = ['TaskTigerView', 'tasktiger_admin']
