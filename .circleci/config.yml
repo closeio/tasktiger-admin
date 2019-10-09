@@ -32,7 +32,7 @@ jobs:
           name: Install dependencies
           command: pip install --user flake8
       - run:
-          name: Check formatting
+          name: Run linter
           command: flake8 .
 
   isort:
@@ -45,5 +45,5 @@ jobs:
           name: Install dependencies
           command: pip install --user isort
       - run:
-          name: Check formatting
+          name: Check import sorting
           command: isort -rc .
