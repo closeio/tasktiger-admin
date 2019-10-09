@@ -9,9 +9,7 @@ from tasktiger_admin import TaskTigerView
 from .config import TEST_DB, REDIS_HOST
 
 
-conn = redis.Redis(
-    host=REDIS_HOST, db=TEST_DB, decode_responses=True
-)
+conn = redis.Redis(host=REDIS_HOST, db=TEST_DB, decode_responses=True)
 tiger = TaskTiger(setup_structlog=True, connection=conn)
 
 
