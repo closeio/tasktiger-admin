@@ -1,0 +1,49 @@
+version: 2
+
+workflows:
+  version: 2
+  workflow:
+    jobs:
+      - black
+      - lint
+      - isort
+
+jobs:
+  black:
+    working_directory: ~/code
+    docker:
+    - image: circleci/python:3.6
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: pip install --user black
+      - run:
+          name: Check formatting
+          command: black --check .
+
+  lint:
+    working_directory: ~/code
+    docker:
+    - image: circleci/python:3.6
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: pip install --user flake8
+      - run:
+          name: Check formatting
+          command: flake8 .
+
+  isort:
+    working_directory: ~/code
+    docker:
+    - image: circleci/python:3.6
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: pip install --user isort
+      - run:
+          name: Check formatting
+          command: isort -rc .
