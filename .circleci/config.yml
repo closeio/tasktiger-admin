@@ -4,9 +4,26 @@ workflows:
   version: 2
   workflow:
     jobs:
+      - test-2.7
+      - test-3.5
+      - test-3.6
       - black
       - lint
       - isort
+
+defaults: &defaults
+  working_directory: ~/code
+  environment:
+    # circleci exposes services on localhost
+    REDIS_HOST: localhost
+  steps:
+  - checkout
+  - run:
+      name: Install dependencies
+      command: pip install --user -r requirements.txt -r requirements-test.txt
+  - run:
+      name: Test
+      command: pytest
 
 jobs:
   black:
@@ -47,3 +64,21 @@ jobs:
       - run:
           name: Check import sorting
           command: isort -rc .
+
+  test-2.7:
+    <<: *defaults
+    docker:
+    - image: circleci/python:2.7
+    - image: redis:4.0.6
+
+  test-3.5:
+    <<: *defaults
+    docker:
+    - image: circleci/python:3.5
+    - image: redis:4.0.6
+
+  test-3.6:
+    <<: *defaults
+    docker:
+    - image: circleci/python:3.6
+    - image: redis:4.0.6
