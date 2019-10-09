@@ -23,13 +23,11 @@ setup(
         'structlog',
         'tasktiger>=0.4',
     ],
-    packages=[
-        'tasktiger_admin',
-    ],
+    packages=['tasktiger_admin'],
     entry_points={
         'console_scripts': [
-            'tasktiger-admin = tasktiger_admin.utils:run_admin',
-        ],
+            'tasktiger-admin = tasktiger_admin.utils:run_admin'
+        ]
     },
     include_package_data=True,
     zip_safe=False,

@@ -11,16 +11,20 @@ def _get_template_vars(task, execution):
         info['task_id'] = task.id
 
     if execution:
-        info['execution_start'] = _get_time(execution['time_started'],
-                                            -TIME_BUFFER)
-        info['execution_failed'] = _get_time(execution['time_failed'],
-                                             TIME_BUFFER)
+        info['execution_start'] = _get_time(
+            execution['time_started'], -TIME_BUFFER
+        )
+        info['execution_failed'] = _get_time(
+            execution['time_failed'], TIME_BUFFER
+        )
 
     return info
 
 
 def _get_time(time_string, delta):
-    execution_time = datetime.datetime.utcfromtimestamp(int(time_string) + delta)
+    execution_time = datetime.datetime.utcfromtimestamp(
+        int(time_string) + delta
+    )
     return execution_time.isoformat()
 
 
