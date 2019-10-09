@@ -15,7 +15,8 @@ class TaskTigerView(BaseView):
 
         Args:
             tiger: TaskTiger instance
-            integration_config: List of tuples containing integration name and URL
+            integration_config: List of tuples containing integration name and
+                URL
         """
         super(TaskTigerView, self).__init__(*args, **kwargs)
         self.tiger = tiger
