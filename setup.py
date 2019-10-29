@@ -21,7 +21,7 @@ setup(
         'flask-admin',
         'redis>=2,<3',
         'structlog',
-        'tasktiger>=0.4',
+        'tasktiger>=0.10.1',
     ],
     packages=['tasktiger_admin'],
     entry_points={
