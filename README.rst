@@ -2,6 +2,12 @@
 tasktiger-admin
 ===============
 
+.. image:: https://circleci.com/gh/closeio/tasktiger-admin.svg?style=svg
+    :target: https://circleci.com/gh/closeio/tasktiger-admin
+
+.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
+	:target: https://github.com/psf/black
+
 *tasktiger-admin* is an admin interface for TaskTiger_ using flask-admin. It
 comes with an overview page that shows the amount of tasks in each queue for
 each state (queued, active, scheduled, error). It lets you inspect queues and
