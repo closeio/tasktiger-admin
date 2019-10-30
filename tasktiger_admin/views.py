@@ -1,7 +1,8 @@
-from collections import OrderedDict
-from flask import redirect, url_for, abort
-from flask_admin import BaseView, expose
 import json
+from collections import OrderedDict
+
+from flask import abort, redirect, url_for
+from flask_admin import BaseView, expose
 from tasktiger import Task, TaskNotFound
 
 from .integrations import generate_integrations
@@ -14,7 +15,8 @@ class TaskTigerView(BaseView):
 
         Args:
             tiger: TaskTiger instance
-            integration_config: List of tuples containing integration name and URL
+            integration_config: List of tuples containing integration name and
+                URL
         """
         super(TaskTigerView, self).__init__(*args, **kwargs)
         self.tiger = tiger
@@ -42,8 +44,10 @@ class TaskTigerView(BaseView):
                         group_stats[stat_name] += stat_num
             queue_stats_groups.append((group_name, group_stats, queue_stats))
 
-        return self.render('tasktiger_admin/tasktiger.html',
-                           queue_stats_groups=queue_stats_groups)
+        return self.render(
+            'tasktiger_admin/tasktiger.html',
+            queue_stats_groups=queue_stats_groups,
+        )
 
     @expose('/<queue>/<state>/retry/', methods=['POST'])
     def task_retry_multiple(self, queue, state):
@@ -57,8 +61,9 @@ class TaskTigerView(BaseView):
     def task_detail(self, queue, state, task_id):
         LIMIT = 1000
         try:
-            task = Task.from_id(self.tiger, queue, state, task_id,
-                                load_executions=LIMIT)
+            task = Task.from_id(
+                self.tiger, queue, state, task_id, load_executions=LIMIT
+            )
         except TaskNotFound:
             abort(404)
 
@@ -67,16 +72,23 @@ class TaskTigerView(BaseView):
             traceback = execution.pop('traceback', None)
             execution_integrations = generate_integrations(
                 self.integration_config.get('EXECUTION_INTEGRATION_LINKS', []),
-                task, execution)
-            executions_dumped.append((
-                json.dumps(execution, indent=2, sort_keys=True),
-                traceback, execution_integrations)
+                task,
+                execution,
+            )
+            executions_dumped.append(
+                (
+                    json.dumps(execution, indent=2, sort_keys=True),
+                    traceback,
+                    execution_integrations,
+                )
             )
 
-        integrations = generate_integrations(self.integration_config.get('INTEGRATION_LINKS', []),
-                                             task, None)
+        integrations = generate_integrations(
+            self.integration_config.get('INTEGRATION_LINKS', []), task, None
+        )
 
-        return self.render('tasktiger_admin/tasktiger_task_detail.html',
+        return self.render(
+            'tasktiger_admin/tasktiger_task_detail.html',
             queue=queue,
             state=state,
             task=task,
@@ -105,10 +117,12 @@ class TaskTigerView(BaseView):
 
     @expose('/<queue>/<state>/')
     def queue_detail(self, queue, state):
-        n, tasks = Task.tasks_from_queue(self.tiger, queue, state,
-                                         load_executions=1)
+        n, tasks = Task.tasks_from_queue(
+            self.tiger, queue, state, load_executions=1
+        )
 
-        return self.render('tasktiger_admin/tasktiger_queue_detail.html',
+        return self.render(
+            'tasktiger_admin/tasktiger_queue_detail.html',
             queue=queue,
             state=state,
             n=n,
