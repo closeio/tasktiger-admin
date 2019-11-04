@@ -13,11 +13,11 @@ comes with an overview page that shows the amount of tasks in each queue for
 each state (queued, active, scheduled, error). It lets you inspect queues and
 individual tasks, as well as delete and retry tasks that errored out.
 
-(Interested in working on projects like this? `Close.io`_ is looking for `great engineers`_ to join our team)
+(Interested in working on projects like this? `Close`_ is looking for `great engineers`_ to join our team)
 
 .. _TaskTiger: https://github.com/closeio/tasktiger
-.. _Close.io: http://close.io
-.. _great engineers: http://jobs.close.io
+.. _Close: http://close.com
+.. _great engineers: http://jobs.close.com
 
 
 Quick start
