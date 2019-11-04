@@ -1,11 +1,17 @@
+# workaround for open() with encoding='' python2/3 compatibility
+from io import open
 from setuptools import setup
+
+with open('README.rst', encoding='utf-8') as file:
+    long_description = file.read()
 
 setup(
     name='tasktiger-admin',
-    version='0.3.0',
+    version='0.3.1',
     url='http://github.com/closeio/tasktiger-admin',
     license='MIT',
     description='Admin for tasktiger, a Python task queue',
+    long_description=long_description,
     platforms='any',
     classifiers=[
         'Intended Audience :: Developers',
