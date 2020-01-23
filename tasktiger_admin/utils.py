@@ -28,7 +28,9 @@ def run_admin(host, port, db, password, listen, interface, **kwargs):
         port = port or dsn_parsed.port
         password = dsn_parsed.password
     conn = redis.Redis(host, int(port or 6379), int(db or 0), password)
-    tiger = TaskTiger(setup_structlog=kwargs['structlog'], connection=conn)
+    # FIXME - fix --no-structlog flag
+    # tiger = TaskTiger(setup_structlog=kwargs['structlog'], connection=conn)
+    tiger = TaskTiger(setup_structlog=False, connection=conn)
     app = Flask(__name__)
     admin = Admin(app, url='/')
     admin.add_view(TaskTigerView(tiger, name='TaskTiger', endpoint='tasktiger'))
