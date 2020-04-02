@@ -1,5 +1,5 @@
 {% extends 'admin/index.html' %}
-{% import 'admin/static.html' as admin_static with context%}
+{% import 'admin/static.html' as admin_static with context %}
 {% block body %}
 
 <h2>TaskTiger</h2>
@@ -11,7 +11,7 @@
    </div>
  {% endblock %}
 
-<table class="metrics table table-striped table-bordered searchable">
+<table class="metrics table table-striped table-bordered">
     <thead>
         <tr>
             <th></th>
@@ -21,7 +21,7 @@
             <th>Error</th>
         </tr>
     </thead>
-    <tbody>
+    <tbody class="searchable">
 {% for group_name, group_stats, queue_stats in queue_stats_groups %}
     {% if queue_stats|length > 1 %}
         <tr>
