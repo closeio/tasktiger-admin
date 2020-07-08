@@ -9,6 +9,7 @@ def _get_template_vars(task, execution):
     info = {}
     if task:
         info['task_id'] = task.id
+        info['queue'] = task.queue
 
     if execution:
         info['execution_start'] = _get_time(
