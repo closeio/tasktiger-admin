@@ -47,6 +47,7 @@ that specify the integration name and URL template.
 The URL template supports three variables:
 
 * ``task_id``: Current task id
+* ``queue``: Task queue name
 * ``execution_start``: Execution start time minus a 10 second buffer
 * ``execution_failed``: Execution failed time plus a 10 second buffer
 
