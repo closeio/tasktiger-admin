@@ -44,7 +44,7 @@ These can be used to easily navigate to external resources like logging
 infrastructure or a Wiki. ``integration_config`` should be a list of tuples
 that specify the integration name and URL template.
 
-The URL template supports three variables:
+The URL template supports four variables:
 
 * ``task_id``: Current task id
 * ``queue``: Task queue name
