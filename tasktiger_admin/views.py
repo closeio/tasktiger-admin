@@ -9,7 +9,7 @@ from .integrations import generate_integrations
 
 
 class TaskTigerView(BaseView):
-    def __init__(self, tiger, integration_config={}, *args, **kwargs):
+    def __init__(self, tiger, integration_config=None, *args, **kwargs):
         """
         TaskTiger admin view.
 
@@ -20,7 +20,7 @@ class TaskTigerView(BaseView):
         """
         super(TaskTigerView, self).__init__(*args, **kwargs)
         self.tiger = tiger
-        self.integration_config = integration_config
+        self.integration_config = {} if integration_config is None else integration_config
 
     @expose('/')
     def index(self):
