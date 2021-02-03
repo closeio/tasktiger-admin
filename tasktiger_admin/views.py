@@ -20,7 +20,9 @@ class TaskTigerView(BaseView):
         """
         super(TaskTigerView, self).__init__(*args, **kwargs)
         self.tiger = tiger
-        self.integration_config = {} if integration_config is None else integration_config
+        self.integration_config = (
+            {} if integration_config is None else integration_config
+        )
 
     @expose('/')
     def index(self):
