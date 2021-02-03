@@ -9,7 +9,7 @@ from .integrations import generate_integrations
 
 
 class TaskTigerView(BaseView):
-    def __init__(self, tiger, integration_config=None, *args, **kwargs):
+    def __init__(self, tiger, integration_config={}, *args, **kwargs):
         """
         TaskTiger admin view.
 
