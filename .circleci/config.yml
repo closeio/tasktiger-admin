@@ -4,7 +4,6 @@ workflows:
   version: 2
   workflow:
     jobs:
-      - test-2.7
       - test-3.6
       - test-3.7
       - test-3.8
@@ -65,12 +64,6 @@ jobs:
       - run:
           name: Check import sorting
           command: isort -rc .
-
-  test-2.7:
-    <<: *defaults
-    docker:
-    - image: circleci/python:2.7
-    - image: redis:4.0.6
 
   test-3.6:
     <<: *defaults
