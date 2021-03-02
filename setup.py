@@ -29,9 +29,9 @@ setup(
     install_requires=[
         'click',
         'flask-admin',
-        'redis>=2,<3',
+        'redis>=2,<4',
         'structlog',
-        'tasktiger>=0.10.1',
+        'tasktiger>=0.11',
     ],
     packages=['tasktiger_admin'],
     entry_points={
