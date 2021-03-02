@@ -69,17 +69,17 @@ jobs:
     <<: *defaults
     docker:
     - image: circleci/python:3.6
-    - image: redis:4.0.6
+    - image: redis:6.2.0
 
   test-3.7:
     <<: *defaults
     docker:
     - image: circleci/python:3.7
-    - image: redis:4.0.6
+    - image: redis:6.2.0
 
   test-3.8:
     <<: *defaults
     docker:
     - image: circleci/python:3.8
-    - image: redis:4.0.6
+    - image: redis:6.2.0
 
