@@ -1,39 +1,128 @@
 {% extends 'admin/index.html' %}
+
+{% block head %}
+    {{ super() }}
+    <style type="text/css">
+        th {
+            width: 1px;
+            white-space: nowrap
+        }
+    </style>
+{% endblock %}
+
 {% block body %}
 
-<h2><a href="../../../">TaskTiger</a> – <a href="../">{{ queue }} ({{ state }})</a></h2>
+    <h2><a href="../../../">TaskTiger</a> – <a href="../">{{ queue }} ({{ state }})</a></h2>
 
-<pre>{{ task_dumped }}</pre>
-{% if integrations %}
-    <p>Links:</p>
-    <ul>
-    {% for name, url in integrations %}
-        <li><a href="{{ url }}">{{ name }}</a></li>
-    {% endfor %}
-    </ul>
-{% endif %}
-{% if executions_dumped %}
-<p>Executions:</p>
+    <table class="metrics table table-striped table-bordered">
+        <thead>
 
-    <ul>
+        </thead>
+        <tbody class="searchable">
+        <tr>
+            <th>id</th>
+            <td>{{ task_data.id }}</td>
+        </tr>
+        <tr>
+            <th>func</th>
+            <td>{{ task_data.func }}</td>
+        </tr>
+        <tr>
+            <th>args</th>
+            <td>{{ task_data.args }}</td>
+        </tr>
+        <tr>
+            <th>kwargs</th>
+            <td>{{ task_data.kwargs }}</td>
+        </tr>
+        <tr>
+            <th>time last queued</th>
+            <td>{{ task_data.time_last_queued.strftime("%Y-%m-%d %H:%M:%S") }}</td>
+        </tr>
+        <tr>
+            <th>dump</th>
+            <td>
+                <details>
+                    <summary>Show/Hide</summary>
+                    <div>
+                        <pre>{{ task_data_dumped }}</pre>
+                    </div>
+                </details>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    {% if integrations %}
+        <p>Links:</p>
+        <ul>
+            {% for name, url in integrations %}
+                <li><a href="{{ url }}">{{ name }}</a></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    {% if executions_dumped %}
+        <h3>Executions</h3>
+        {% for execution_dumped, traceback, execution_integrations, execution in executions_dumped %}
+            <table class="metrics table table-striped table-bordered">
+                <thead>
 
-        {% for execution_dumped, traceback, execution_integrations in executions_dumped %}
-
-        <li><pre>{{ execution_dumped }}
-
-{{ traceback }}</pre>
-        </li>
-            {% if execution_integrations %}
-                <ul>
-                {% for name, url in execution_integrations %}
-                    <li><a href="{{ url }}">{{ name }}</a></li>
-                {% endfor %}
-                </ul>
-            {% endif %}
+                </thead>
+                <tbody class="searchable">
+                <tr>
+                    <th>exception name</th>
+                    <td>{{ execution.exception_name }}</td>
+                </tr>
+                <tr>
+                    <th>host</th>
+                    <td>{{ execution.host }}</td>
+                </tr>
+                <tr>
+                    <th>success</th>
+                    <td>{{ execution.success }}</td>
+                </tr>
+                <tr>
+                    <th>time failed</th>
+                    <td>{{ execution.time_failed.strftime("%Y-%m-%d %H:%M:%S") }}</td>
+                </tr>
+                <tr>
+                    <th>time started</th>
+                    <td>{{ execution.time_started.strftime("%Y-%m-%d %H:%M:%S") }}</td>
+                </tr>
+                <tr>
+                    <th>execution integrations</th>
+                    <td>
+                        <ul>
+                            {% for name, url in execution_integrations %}
+                                <li><a href="{{ url }}">{{ name }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <th>traceback</th>
+                    <td>
+                        <details>
+                            <summary>Show/Hide</summary>
+                            <div>
+                                <pre>{{ traceback }}</pre>
+                            </div>
+                        </details>
+                    </td>
+                </tr>
+                <tr>
+                    <th>dump</th>
+                    <td>
+                        <details>
+                            <summary>Show/Hide</summary>
+                            <div>
+                                <pre>{{ execution_dumped }}</pre>
+                            </div>
+                        </details>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
         {% endfor %}
-
-    </ul>
-
-{% endif %}
+    {% endif %}
 
 {% endblock %}
