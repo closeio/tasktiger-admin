@@ -17,27 +17,27 @@
     <table class="metrics table table-striped table-bordered">
         <tbody>
         <tr>
-            <th>id</th>
+            <th>ID</th>
             <td>{{ task_data.id }}</td>
         </tr>
         <tr>
-            <th>func</th>
+            <th>Func</th>
             <td>{{ task_data.func }}</td>
         </tr>
         <tr>
-            <th>args</th>
+            <th>Args</th>
             <td>{{ task_data.args }}</td>
         </tr>
         <tr>
-            <th>kwargs</th>
+            <th>Kwargs</th>
             <td>{{ task_data.kwargs }}</td>
         </tr>
         <tr>
-            <th>time last queued</th>
+            <th>Time Last Queued</th>
             <td>{{ task_data.time_last_queued.strftime("%Y-%m-%d %H:%M:%S") }}</td>
         </tr>
         <tr>
-            <th>dump</th>
+            <th>Dump</th>
             <td>
                 <details>
                     <summary>Show/Hide</summary>
@@ -63,27 +63,28 @@
             <table class="metrics table table-striped table-bordered">
                 <tbody>
                 <tr>
-                    <th>exception name</th>
+                    <th>Exception Name</th>
                     <td>{{ execution.exception_name }}</td>
                 </tr>
                 <tr>
-                    <th>host</th>
+                    <th>Host</th>
                     <td>{{ execution.host }}</td>
                 </tr>
                 <tr>
-                    <th>success</th>
+                    <th>Success</th>
                     <td>{{ execution.success }}</td>
                 </tr>
                 <tr>
-                    <th>time failed</th>
+                    <th>Time Failed</th>
                     <td>{{ execution.time_failed.strftime("%Y-%m-%d %H:%M:%S") }}</td>
                 </tr>
                 <tr>
-                    <th>time started</th>
+                    <th>Time Started</th>
                     <td>{{ execution.time_started.strftime("%Y-%m-%d %H:%M:%S") }}</td>
                 </tr>
+                {% if execution_integrations %}
                 <tr>
-                    <th>execution integrations</th>
+                    <th>Execution Integrations</th>
                     <td>
                         <ul>
                             {% for name, url in execution_integrations %}
@@ -92,10 +93,15 @@
                         </ul>
                     </td>
                 </tr>
+                {% endif %}
                 <tr>
-                    <th>traceback</th>
+                    <th>Traceback</th>
                     <td>
+                        {% if loop.first %}
+                        <details open>
+                        {% else %}
                         <details>
+                        {% endif %}
                             <summary>Show/Hide</summary>
                             <div>
                                 <pre>{{ traceback }}</pre>
@@ -104,7 +110,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <th>dump</th>
+                    <th>Dump</th>
                     <td>
                         <details>
                             <summary>Show/Hide</summary>

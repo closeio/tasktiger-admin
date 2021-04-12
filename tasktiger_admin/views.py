@@ -111,7 +111,7 @@ class TaskTigerView(BaseView):
             task_data_dumped=json.dumps(
                 task_data_converted, indent=2, sort_keys=True, default=str
             ),
-            executions_dumped=executions_dumped,
+            executions_dumped=reversed(executions_dumped),
             integrations=integrations,
         )
 
