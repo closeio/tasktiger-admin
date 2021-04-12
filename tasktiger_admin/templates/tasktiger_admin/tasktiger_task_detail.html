@@ -15,10 +15,7 @@
     <h2><a href="../../../">TaskTiger</a> – <a href="../">{{ queue }} ({{ state }})</a></h2>
 
     <table class="metrics table table-striped table-bordered">
-        <thead>
-
-        </thead>
-        <tbody class="searchable">
+        <tbody>
         <tr>
             <th>id</th>
             <td>{{ task_data.id }}</td>
@@ -64,10 +61,7 @@
         <h3>Executions</h3>
         {% for execution_dumped, traceback, execution_integrations, execution in executions_dumped %}
             <table class="metrics table table-striped table-bordered">
-                <thead>
-
-                </thead>
-                <tbody class="searchable">
+                <tbody>
                 <tr>
                     <th>exception name</th>
                     <td>{{ execution.exception_name }}</td>
