@@ -99,18 +99,13 @@ class TaskTigerView(BaseView):
             self.integration_config.get('INTEGRATION_LINKS', []), task, None
         )
 
-        task_data_converted = convert_keys_to_datetime(
-            task.data, ['time_last_queued']
-        )
-
         return self.render(
             'tasktiger_admin/tasktiger_task_detail.html',
             queue=queue,
             state=state,
-            task_data=task_data_converted,
-            task_data_dumped=json.dumps(
-                task_data_converted, indent=2, sort_keys=True, default=str
-            ),
+            task=task,
+            task_data=task.data,
+            task_data_dumped=json.dumps(task.data, indent=2, sort_keys=True),
             executions_dumped=reversed(executions_dumped),
             integrations=integrations,
         )
