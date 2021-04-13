@@ -32,10 +32,12 @@
             <th>Kwargs</th>
             <td>{{ task_data.kwargs }}</td>
         </tr>
-        <tr>
-            <th>Time Last Queued</th>
-            <td>{{ task.time_last_queued.strftime("%Y-%m-%d %H:%M:%S") }}</td>
-        </tr>
+        {% if task.time_last_queued %}
+            <tr>
+                <th>Time Last Queued</th>
+                <td>{{ task.time_last_queued.strftime("%Y-%m-%d %H:%M:%S") }}</td>
+            </tr>
+        {% endif %}
         <tr>
             <th>Dump</th>
             <td>
