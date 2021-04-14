@@ -38,6 +38,18 @@
                 <td>{{ task.time_last_queued.strftime("%Y-%m-%d %H:%M:%S") }}</td>
             </tr>
         {% endif %}
+        {% if "unique" in task_data %}
+        <tr>
+            <th>Unique</th>
+            <td>{{ task_data.unique}}</td>
+        </tr>
+        {% endif %}
+        {% if "unique_key" in task_data %}
+        <tr>
+            <th>Unique Key</th>
+            <td>{{ task_data.unique_key}}</td>
+        </tr>
+        {% endif %}
         <tr>
             <th>Dump</th>
             <td>
