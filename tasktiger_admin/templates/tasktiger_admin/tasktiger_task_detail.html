@@ -1,39 +1,146 @@
 {% extends 'admin/index.html' %}
+
+{% block head %}
+    {{ super() }}
+    <style type="text/css">
+        th {
+            width: 1px;
+            white-space: nowrap;
+        }
+
+        summary {
+            cursor: pointer;
+        }
+    </style>
+{% endblock %}
+
 {% block body %}
 
-<h2><a href="../../../">TaskTiger</a> – <a href="../">{{ queue }} ({{ state }})</a></h2>
+    <h2><a href="../../../">TaskTiger</a> – <a href="../">{{ queue }} ({{ state }})</a></h2>
 
-<pre>{{ task_dumped }}</pre>
-{% if integrations %}
-    <p>Links:</p>
-    <ul>
-    {% for name, url in integrations %}
-        <li><a href="{{ url }}">{{ name }}</a></li>
-    {% endfor %}
-    </ul>
-{% endif %}
-{% if executions_dumped %}
-<p>Executions:</p>
-
-    <ul>
-
-        {% for execution_dumped, traceback, execution_integrations in executions_dumped %}
-
-        <li><pre>{{ execution_dumped }}
-
-{{ traceback }}</pre>
-        </li>
-            {% if execution_integrations %}
-                <ul>
-                {% for name, url in execution_integrations %}
-                    <li><a href="{{ url }}">{{ name }}</a></li>
-                {% endfor %}
-                </ul>
-            {% endif %}
+    <table class="metrics table table-striped table-bordered">
+        <tbody>
+        <tr>
+            <th>ID</th>
+            <td>{{ task_data.id }}</td>
+        </tr>
+        <tr>
+            <th>Func</th>
+            <td>{{ task_data.func }}</td>
+        </tr>
+        <tr>
+            <th>Args</th>
+            <td>{{ task_data.args }}</td>
+        </tr>
+        <tr>
+            <th>Kwargs</th>
+            <td>{{ task_data.kwargs }}</td>
+        </tr>
+        {% if task.time_last_queued %}
+            <tr>
+                <th>Time Last Queued</th>
+                <td>{{ task.time_last_queued.strftime("%Y-%m-%d %H:%M:%S") }}</td>
+            </tr>
+        {% endif %}
+        {% if "unique" in task_data %}
+            <tr>
+                <th>Unique</th>
+                <td>{{ task_data.unique }}</td>
+            </tr>
+        {% endif %}
+        {% if "unique_key" in task_data %}
+            <tr>
+                <th>Unique Key</th>
+                <td>{{ task_data.unique_key }}</td>
+            </tr>
+        {% endif %}
+        <tr>
+            <th>Dump</th>
+            <td>
+                <details>
+                    <summary>Show/Hide</summary>
+                    <div>
+                        <pre>{{ task_data_dumped }}</pre>
+                    </div>
+                </details>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    {% if integrations %}
+        <p>Links:</p>
+        <ul>
+            {% for name, url in integrations %}
+                <li><a href="{{ url }}">{{ name }}</a></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    {% if executions_dumped %}
+        <h3>Executions</h3>
+        {% for execution_dumped, traceback, execution_integrations, execution in executions_dumped %}
+            <table class="metrics table table-striped table-bordered">
+                <tbody>
+                <tr>
+                    <th>Exception Name</th>
+                    <td>{{ execution.exception_name }}</td>
+                </tr>
+                <tr>
+                    <th>Host</th>
+                    <td>{{ execution.host }}</td>
+                </tr>
+                <tr>
+                    <th>Success</th>
+                    <td>{{ execution.success }}</td>
+                </tr>
+                <tr>
+                    <th>Time Failed</th>
+                    <td>{{ execution.time_failed.strftime("%Y-%m-%d %H:%M:%S") }}</td>
+                </tr>
+                <tr>
+                    <th>Time Started</th>
+                    <td>{{ execution.time_started.strftime("%Y-%m-%d %H:%M:%S") }}</td>
+                </tr>
+                {% if execution_integrations %}
+                <tr>
+                    <th>Execution Integrations</th>
+                    <td>
+                        <ul>
+                            {% for name, url in execution_integrations %}
+                                <li><a href="{{ url }}">{{ name }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                </tr>
+                {% endif %}
+                <tr>
+                    <th>Traceback</th>
+                    <td>
+                        {% if loop.first %}
+                        <details open>
+                        {% else %}
+                        <details>
+                        {% endif %}
+                            <summary>Show/Hide</summary>
+                            <div>
+                                <pre>{{ traceback }}</pre>
+                            </div>
+                        </details>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Dump</th>
+                    <td>
+                        <details>
+                            <summary>Show/Hide</summary>
+                            <div>
+                                <pre>{{ execution_dumped }}</pre>
+                            </div>
+                        </details>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
         {% endfor %}
-
-    </ul>
-
-{% endif %}
+    {% endif %}
 
 {% endblock %}

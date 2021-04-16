@@ -1,3 +1,4 @@
+import datetime
 import json
 from collections import OrderedDict
 
@@ -77,11 +78,20 @@ class TaskTigerView(BaseView):
                 task,
                 execution,
             )
+            execution_converted = convert_keys_to_datetime(
+                execution, ['time_failed', 'time_started']
+            )
             executions_dumped.append(
                 (
-                    json.dumps(execution, indent=2, sort_keys=True),
+                    json.dumps(
+                        execution_converted,
+                        indent=2,
+                        sort_keys=True,
+                        default=str,
+                    ),
                     traceback,
                     execution_integrations,
+                    execution_converted,
                 )
             )
 
@@ -94,8 +104,9 @@ class TaskTigerView(BaseView):
             queue=queue,
             state=state,
             task=task,
-            task_dumped=json.dumps(task.data, indent=2, sort_keys=True),
-            executions_dumped=executions_dumped,
+            task_data=task.data,
+            task_data_dumped=json.dumps(task.data, indent=2, sort_keys=True),
+            executions_dumped=reversed(executions_dumped),
             integrations=integrations,
         )
 
@@ -130,3 +141,11 @@ class TaskTigerView(BaseView):
             n=n,
             tasks=tasks,
         )
+
+
+def convert_keys_to_datetime(dict_arg, keys):
+    new_dict = {**dict_arg}
+    for key in keys:
+        if key in new_dict:
+            new_dict[key] = datetime.datetime.utcfromtimestamp(new_dict[key])
+    return new_dict
