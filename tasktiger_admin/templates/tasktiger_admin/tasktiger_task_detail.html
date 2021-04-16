@@ -5,7 +5,11 @@
     <style type="text/css">
         th {
             width: 1px;
-            white-space: nowrap
+            white-space: nowrap;
+        }
+
+        summary {
+            cursor: pointer;
         }
     </style>
 {% endblock %}
@@ -39,16 +43,16 @@
             </tr>
         {% endif %}
         {% if "unique" in task_data %}
-        <tr>
-            <th>Unique</th>
-            <td>{{ task_data.unique}}</td>
-        </tr>
+            <tr>
+                <th>Unique</th>
+                <td>{{ task_data.unique }}</td>
+            </tr>
         {% endif %}
         {% if "unique_key" in task_data %}
-        <tr>
-            <th>Unique Key</th>
-            <td>{{ task_data.unique_key}}</td>
-        </tr>
+            <tr>
+                <th>Unique Key</th>
+                <td>{{ task_data.unique_key }}</td>
+            </tr>
         {% endif %}
         <tr>
             <th>Dump</th>
