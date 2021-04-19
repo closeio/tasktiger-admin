@@ -28,7 +28,7 @@ requests-toolbelt==0.8.0
 shellingham==1.3.1
 six==1.12.0
 structlog==20.2.0
-tasktiger==0.14
+git+ssh://git@github.com/closeio/tasktiger.git@01085f30b0e39fe3445619e9983c886897989d32#egg=tasktiger
 tomlkit==0.5.5
 urllib3==1.25.6
 virtualenv==16.7.5
