@@ -36,6 +36,12 @@
             <th>Kwargs</th>
             <td>{{ task_data.kwargs }}</td>
         </tr>
+        {% if task.ts %}
+            <tr>
+                <th>Run At</th>
+                <td>{{ task.ts.strftime("%Y-%m-%d %H:%M:%S") }}</td>
+            </tr>
+        {% endif %}
         {% if task.time_last_queued %}
             <tr>
                 <th>Time Last Queued</th>
