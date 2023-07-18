@@ -29,7 +29,7 @@ setup(
     install_requires=[
         'click',
         'flask-admin',
-        'redis>=2,<4',
+        'redis>=2,<5',
         'structlog',
         'tasktiger>=0.11',
     ],
