@@ -5,9 +5,9 @@
 <h2>TaskTiger</h2>
 
 {% block details_search %}
-   <div class="input-group fa_filter_container col-lg-6">
+   <div class="input-group col-lg-6">
      <span class="input-group-addon">{{ _gettext('Filter') }}</span>
-     <input id="fa_filter" type="text" class="form-control">
+     <input id="task_filter" type="text" class="form-control">
    </div>
  {% endblock %}
 
@@ -25,7 +25,7 @@
 {% for group_name, group_stats, queue_stats in queue_stats_groups %}
     {% if queue_stats|length > 1 %}
         <tr>
-            <th>{{ group_name }}</th>
+            <th style="cursor: pointer;"><span class="triangle">►</span> {{ group_name }} ({{ queue_stats|length }})</th>
             <td>{{ group_stats.queued }}</td>
             <td>{{ group_stats.active }}</td>
             <td>{{ group_stats.scheduled }}</td>
@@ -34,7 +34,7 @@
     {% endif %}
 
     {% for queue, stats in queue_stats %}
-        <tr>
+        <tr{% if queue_stats|length > 1 %} style="display: none;"{% endif %}>
         {% if queue_stats|length > 1 %}
             <td>&nbsp; {{ queue }}</td>
         {% else %}
@@ -53,5 +53,72 @@
 {% endblock %}
 
 {% block tail %}
-  <script src="{{ admin_static.url(filename='admin/js/details_filter.js', v='1.0.0') }}"></script>
+<script type="text/javascript">
+let debounceTimeout;
+
+document.getElementById('task_filter').addEventListener('input', function() {
+    clearTimeout(debounceTimeout);
+    debounceTimeout = setTimeout(() => {
+        filterRows(this.value);
+        updateHeaderDisplay();
+    }, 300);
+})
+
+document.querySelectorAll('.searchable th').forEach(header => {
+    header.addEventListener('click', function() {
+        toggleHeader(header);
+    });
+});
+
+function filterRows(value) {
+    const regex = new RegExp(value, 'i');
+    const rows = document.querySelectorAll('.searchable tr');
+
+    rows.forEach(row => {
+        const isHeader = row.querySelector('th');
+        if (value) {
+            row.style.display = regex.test(row.textContent) ? '' : 'none';
+        } else {
+            row.style.display = isHeader ? '' : 'none';
+            if (isHeader) {
+                let triangle = row.querySelector('span.triangle');
+                if (triangle) triangle.innerText = '►';
+            }
+        }
+    });
+}
+
+function toggleHeader(header) {
+    let triangle = header.querySelector('span.triangle');
+    if (!triangle) return;
+
+    let nextRow = header.parentElement.nextElementSibling;
+    let expand = triangle.innerText == '►';
+    triangle.innerText = expand ? '▼' : '►';
+
+    while (nextRow && !nextRow.querySelector('th')) {
+        nextRow.style.display = expand ? '' : 'none';
+        nextRow = nextRow.nextElementSibling;
+    }
+}
+
+function updateHeaderDisplay() {
+    const headers = document.querySelectorAll('.searchable th');
+    headers.forEach(header => {
+        let triangle = header.querySelector('span.triangle');
+        if (!triangle) return;
+
+        let nextRow = header.parentElement.nextElementSibling;
+        while (nextRow && !nextRow.querySelector('th')) {
+            if (!nextRow.style.display) {
+                header.parentElement.style.display = '';
+                triangle.innerText = '▼';
+            }
+            nextRow = nextRow.nextElementSibling;
+        }
+    });
+}
+
+document.getElementById('task_filter').focus();
+</script>
 {% endblock %}
