@@ -1,0 +1,62 @@
+name: test-workflow
+on:
+  push:
+
+jobs:
+  lint:
+    strategy:
+      matrix:
+        python-version: [ '3.8', '3.9', '3.10', '3.11' ]
+    name: Lint ${{ matrix.python-version }}
+    runs-on: 'ubuntu-20.04'
+    container: python:${{ matrix.python-version }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements_lint.txt
+
+      - name: Lint code
+        run: |
+          ruff check
+          ruff format --check
+          ruff check --select I
+
+  # Run tests
+  test:
+    strategy:
+      matrix:
+        python-version: ['3.8', '3.9', '3.10', '3.11']
+        os: ['ubuntu-20.04']
+        requirements: ["requirements_tests"]
+        redis-version: [4, 5, 6, 7]
+        redis-py-version: [3.3.0, 4.6.0]
+      # Do not cancel any jobs when a single job fails
+      fail-fast: false
+    name: Python ${{ matrix.python-version }} on ${{ matrix.os }} with ${{ matrix.requirements }} and Redis ${{ matrix.redis-version }} and redis-py==${{ matrix.redis-py-version }}
+    runs-on: ${{ matrix.os }}
+    container: python:${{ matrix.python-version }}
+    services:
+      redis:
+        image: redis:${{ matrix.redis-version }}
+        # Set health checks to wait until redis has started
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: |
+          pip install -r ${{ matrix.requirements }}.txt
+
+      - name: Run tests
+        run: pytest
+        env:
+          REDIS_TEST_HOST: redis
+          REDIS_TEST_DB: 0
