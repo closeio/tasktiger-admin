@@ -57,5 +57,4 @@ jobs:
       - name: Run tests
         run: pytest
         env:
-          REDIS_TEST_HOST: redis
-          REDIS_TEST_DB: 0
+          REDIS_HOST: redis
