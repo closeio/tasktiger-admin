@@ -11,7 +11,7 @@ with open("README.rst", encoding="utf-8") as file:
 
 setup(
     name="tasktiger-admin",
-    version="0.4",
+    version=version,
     url="http://github.com/closeio/tasktiger-admin",
     license="MIT",
     description="Admin for tasktiger, a Python task queue",
