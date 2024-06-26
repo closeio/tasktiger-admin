@@ -2,7 +2,7 @@ import re
 
 from setuptools import setup
 
-VERSION_FILE = "tasktiger/__init__.py"
+VERSION_FILE = "tasktiger_admin/__init__.py"
 with open(VERSION_FILE, encoding="utf8") as fd:
     version = re.search(r'__version__ = ([\'"])(.*?)\1', fd.read()).group(2)
 
