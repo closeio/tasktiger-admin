@@ -11,6 +11,7 @@
 <table class="metrics table table-striped table-bordered">
     <thead>
         <tr>
+            <th style="width:135px;">ID</th>
             <th style="width:135px;">Run At</th>
             <th style="min-width:135px;">Func</th>
             <th style="min-width:135px;">Args</th>
@@ -20,7 +21,8 @@
     <tbody>
 {% for task in tasks %}
         <tr>
-            <td><a href="{{ task.id }}/">{{ task.ts.strftime("%Y-%m-%d %H:%M:%S") }}</a></td>
+            <td><a href="{{ task.id }}/">{{ task.id[:6] }}</a></td>
+            <td>{{ task.ts.strftime("%Y-%m-%d %H:%M:%S") }}</td>
             <td>{{ task.serialized_func }}</td>
             <td>{{ task.args }} {{ task.kwargs }}</td>
             <td>{% if task.executions %}{{ task.executions.0.exception_name }}{% endif %}

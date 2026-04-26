@@ -12,6 +12,21 @@
             cursor: pointer;
         }
     </style>
+    <script
+      type="text/javascript"
+      src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"
+    ></script>
+    
+    <script>
+        this.task_data = {
+            queue: "{{ task.queue }}",
+            state: "{{ task.state }}",
+            id: "{{ task.id }}",
+        };
+    </script>
+    <script src="{{url_for('static', filename='js/graph.js')}}"></script>
+    <style type="text/css" src="{{url_for('static', filename='css/main.css')}}"></style>
+
 {% endblock %}
 
 {% block body %}
@@ -35,6 +50,37 @@
         <tr>
             <th>Kwargs</th>
             <td>{{ task_data.kwargs }}</td>
+        </tr>
+        <tr>
+            <th>Dependencies</th>
+            <td>
+                <details>
+                    <summary>Show/Hide</summary>
+                    {% for task in task_dependencies %}
+                        <div>
+                            <a href="../../../{{ task.queue }}/{{ task.state }}/{{ task.id }}" target="_blank">{{ task.id[:6] }}</a>
+                            {% if task.state %}
+                            | {{ task.state }}
+                            | {{ task.ts.strftime("%Y-%m-%d %H:%M:%S") }}
+                            | {{ task.serialized_func }}
+                            | {{ task.args }} {{ task.kwargs }}
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </details>
+            </td>
+        </tr>
+        <tr>
+            <th>Workflow</th>
+            <td>
+                <details>
+                    <summary>Show/Hide</summary>
+                    <div>
+                        <input type="button" value="Refresh" onclick="javascript:load_graph()">
+                        <div id="graph"></div>
+                    </div>
+                </details>
+            </td>
         </tr>
         {% if task.ts %}
             <tr>

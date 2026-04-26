@@ -19,6 +19,8 @@
             <th>Active</th>
             <th>Scheduled</th>
             <th>Error</th>
+            <th>Waiting</th>
+            <th>Completed</th>
         </tr>
     </thead>
     <tbody class="searchable">
@@ -30,6 +32,8 @@
             <td>{{ group_stats.active }}</td>
             <td>{{ group_stats.scheduled }}</td>
             <td>{{ group_stats.error }}</td>
+            <td>{{ group_stats.waiting }}</td>
+            <td>{{ group_stats.completed }}</td>
         </tr>
     {% endif %}
 
@@ -44,6 +48,8 @@
             <td><a href="{{ queue }}/active/">{{ stats.active }}</td>
             <td><a href="{{ queue }}/scheduled/">{{ stats.scheduled }}</td>
             <td><a href="{{ queue }}/error/">{{ stats.error }}</a></td>
+            <td><a href="{{ queue }}/waiting/">{{ stats.waiting }}</a></td>
+            <td><a href="{{ queue }}/completed/">{{ stats.completed }}</a></td>
         </tr>
     {% endfor %}
 {% endfor %}

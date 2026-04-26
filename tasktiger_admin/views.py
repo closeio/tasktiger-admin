@@ -5,6 +5,7 @@ from collections import OrderedDict
 from flask import abort, redirect, url_for
 from flask_admin import BaseView, expose
 from tasktiger import Task, TaskNotFound
+from tasktiger_admin.graph import Graph, VisData
 
 from .integrations import generate_integrations
 
@@ -99,6 +100,7 @@ class TaskTigerView(BaseView):
             self.integration_config.get("INTEGRATION_LINKS", []), task, None
         )
 
+        task_deps = task.get_dependencies()
         return self.render(
             "tasktiger_admin/tasktiger_task_detail.html",
             queue=queue,
@@ -108,8 +110,21 @@ class TaskTigerView(BaseView):
             task_data_dumped=json.dumps(task.data, indent=2, sort_keys=True),
             executions_dumped=reversed(executions_dumped),
             integrations=integrations,
+            task_dependencies=task_deps,
         )
 
+    @expose("/<queue>/<state>/<task_id>/graph/")
+    def graph(self, queue, state, task_id):
+        try:
+            data: VisData = Graph().generate(self.tiger, queue, state, task_id)
+            json_data = json.dumps(
+                data, 
+                default=lambda x: x.__dict__,
+                indent=2)
+            return json_data
+        except Exception as ex:
+            abort(500)      
+    
     @expose("/<queue>/<state>/<task_id>/retry/", methods=["POST"])
     def task_retry(self, queue, state, task_id):
         try:
