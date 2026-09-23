@@ -19,13 +19,13 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v6
         name: Install Python
         with:
-          python-version: 3.8
+          python-version: '3.13'
 
       - run: |
-          pip install packaging
+          pip install packaging setuptools
       - name: Normalize the release version
         run: |
           echo "release_version=`echo '${{ github.event.inputs.requested_release_tag }}' | sed 's/^v//'`" >> $GITHUB_ENV
