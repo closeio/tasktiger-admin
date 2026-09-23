@@ -11,14 +11,20 @@
    </div>
  {% endblock %}
 
+<style>
+    .sort-header {
+        cursor: pointer;
+    }
+</style>
+
 <table class="metrics table table-striped table-bordered">
     <thead>
         <tr>
             <th></th>
-            <th>Queued</th>
-            <th>Active</th>
-            <th>Scheduled</th>
-            <th>Error</th>
+            <th class="sort-header">Queued <span class="sort-arrow"></span></th>
+            <th class="sort-header">Active <span class="sort-arrow"></span></th>
+            <th class="sort-header">Scheduled <span class="sort-arrow"></span></th>
+            <th class="sort-header">Error <span class="sort-arrow"></span></th>
         </tr>
     </thead>
     <tbody class="searchable">
@@ -40,9 +46,9 @@
         {% else %}
             <th>{{ queue }}</th>
         {% endif %}
-            <td><a href="{{ queue }}/queued/">{{ stats.queued }}</td>
-            <td><a href="{{ queue }}/active/">{{ stats.active }}</td>
-            <td><a href="{{ queue }}/scheduled/">{{ stats.scheduled }}</td>
+            <td><a href="{{ queue }}/queued/">{{ stats.queued }}</a></td>
+            <td><a href="{{ queue }}/active/">{{ stats.active }}</a></td>
+            <td><a href="{{ queue }}/scheduled/">{{ stats.scheduled }}</a></td>
             <td><a href="{{ queue }}/error/">{{ stats.error }}</a></td>
         </tr>
     {% endfor %}
@@ -69,6 +75,102 @@ document.querySelectorAll('.searchable th').forEach(header => {
         toggleHeader(header);
     });
 });
+
+// Capture the original row order once so the "none" sort mode can restore it.
+const searchableBody = document.querySelector('tbody.searchable');
+Array.from(searchableBody.rows).forEach((row, index) => {
+    row.dataset.originalIndex = index;
+});
+
+// Sorting state for the task-state columns.
+let sortColumn = null;
+let sortDirection = null;
+
+document.querySelectorAll('.sort-header').forEach(header => {
+    header.addEventListener('click', function() {
+        const column = header.cellIndex;
+        if (sortColumn === column) {
+            // Cycle the active column: desc -> asc -> none.
+            if (sortDirection === 'desc') {
+                sortDirection = 'asc';
+            } else if (sortDirection === 'asc') {
+                sortColumn = null;
+                sortDirection = null;
+            }
+        } else {
+            // Move the sort to a new column, starting descending.
+            sortColumn = column;
+            sortDirection = 'desc';
+        }
+        applySort();
+        updateArrows();
+    });
+});
+
+// Return true if the row is a top-level row (its first cell is a <th>).
+function isTopLevelRow(row) {
+    return row.cells[0].tagName === 'TH';
+}
+
+// Parse the numeric value of a row's cell at the given column index.
+function cellValue(row, column) {
+    return parseInt(row.cells[column].textContent.trim(), 10) || 0;
+}
+
+function applySort() {
+    const rows = Array.from(searchableBody.rows);
+
+    // Partition rows into blocks. A block begins at a top-level row and
+    // includes all following child rows up to the next top-level row.
+    const blocks = [];
+    let currentBlock = null;
+    rows.forEach(row => {
+        if (isTopLevelRow(row)) {
+            currentBlock = { header: row, children: [] };
+            blocks.push(currentBlock);
+        } else if (currentBlock) {
+            currentBlock.children.push(row);
+        }
+    });
+
+    const originalIndex = row =>
+        parseInt(row.dataset.originalIndex, 10);
+
+    // Comparator for the current direction, with a stable tie-break on the
+    // original index so equal values keep a deterministic order.
+    const compare = (a, b) => {
+        if (sortDirection === null) {
+            return originalIndex(a) - originalIndex(b);
+        }
+        const delta = cellValue(a, sortColumn) - cellValue(b, sortColumn);
+        const ordered = sortDirection === 'asc' ? delta : -delta;
+        return ordered !== 0 ? ordered : originalIndex(a) - originalIndex(b);
+    };
+
+    blocks.sort((a, b) => compare(a.header, b.header));
+    blocks.forEach(block => block.children.sort(compare));
+
+    // Re-append rows in the new order. appendChild moves nodes, preserving
+    // each row's inline display so collapse/filter visibility is kept.
+    blocks.forEach(block => {
+        searchableBody.appendChild(block.header);
+        block.children.forEach(child => searchableBody.appendChild(child));
+    });
+}
+
+function updateArrows() {
+    document.querySelectorAll('.sort-header').forEach(header => {
+        const arrow = header.querySelector('.sort-arrow');
+        const column = header.cellIndex;
+        if (column === sortColumn && sortDirection === 'desc') {
+            arrow.textContent = '↓';
+        } else if (column === sortColumn && sortDirection === 'asc') {
+            arrow.textContent = '↑';
+        } else {
+            arrow.textContent = '';
+        }
+    });
+}
 
 function filterRows(value) {
     const regex = new RegExp(value, 'i');
