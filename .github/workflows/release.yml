@@ -6,6 +6,10 @@ on:
       requested_release_tag:
         description: 'The tag to use for this release (e.g., `v2.3.0`)'
         required: true
+      dry_run:
+        description: 'Dry run: Skip tag, upload to TestPyPI'
+        type: boolean
+        default: false
 
 jobs:
   build_and_upload:
@@ -19,13 +23,15 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v6
         name: Install Python
         with:
-          python-version: 3.8
+          python-version: '3.13'
 
+      # setuptools 77 and later write Metadata-Version 2.4. The twine version
+      # in the publish action does not support it.
       - run: |
-          pip install packaging
+          pip install packaging 'setuptools<77'
       - name: Normalize the release version
         run: |
           echo "release_version=`echo '${{ github.event.inputs.requested_release_tag }}' | sed 's/^v//'`" >> $GITHUB_ENV
@@ -67,6 +73,7 @@ jobs:
           echo "release_version=$release_version" >> $GITHUB_OUTPUT
           echo "release_tag=$release_tag" >> $GITHUB_OUTPUT
       - name: Tag commit
+        if: ${{ !inputs.dry_run }}
         uses: actions/github-script@v7.0.1
         with:
           script: |
@@ -80,4 +87,12 @@ jobs:
         run: |
           python setup.py sdist
       - name: Upload to PyPI
+        if: ${{ !inputs.dry_run }}
         uses: closeio/gh-action-pypi-publish@ec4db0b4ddc65acdf4bff5fa45ac92d78b56bdf0  # v1.9
+      - name: Upload to TestPyPI
+        if: ${{ inputs.dry_run }}
+        uses: closeio/gh-action-pypi-publish@ec4db0b4ddc65acdf4bff5fa45ac92d78b56bdf0  # v1.9
+        with:
+          repository-url: https://test.pypi.org/legacy/
+          # Allow repeated dry runs for the same version.
+          skip-existing: true
