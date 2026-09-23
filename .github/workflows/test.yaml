@@ -8,7 +8,7 @@ jobs:
       matrix:
         python-version: [ '3.8', '3.9', '3.10', '3.11' ]
     name: Lint ${{ matrix.python-version }}
-    runs-on: 'ubuntu-20.04'
+    runs-on: 'ubuntu-26.04'
     container: python:${{ matrix.python-version }}
     steps:
       - name: Checkout code
@@ -29,7 +29,7 @@ jobs:
     strategy:
       matrix:
         python-version: ['3.8', '3.9', '3.10', '3.11']
-        os: ['ubuntu-20.04']
+        os: ['ubuntu-26.04']
         redis-version: [4, 5, 6, 7]
       # Do not cancel any jobs when a single job fails
       fail-fast: false
