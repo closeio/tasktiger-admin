@@ -76,11 +76,7 @@ document.querySelectorAll('.searchable th').forEach(header => {
     });
 });
 
-// Capture the original row order once so the "none" sort mode can restore it.
 const searchableBody = document.querySelector('tbody.searchable');
-Array.from(searchableBody.rows).forEach((row, index) => {
-    row.dataset.originalIndex = index;
-});
 
 // Sorting state for the task-state columns.
 let sortColumn = null;
@@ -112,52 +108,68 @@ function isTopLevelRow(row) {
     return row.cells[0].tagName === 'TH';
 }
 
-// Parse the numeric value of a row's cell at the given column index.
-function cellValue(row, column) {
-    return parseInt(row.cells[column].textContent.trim(), 10) || 0;
+// Parse the numeric value of a cell. Text that is not a number gives 0.
+function cellValue(cell) {
+    return parseInt(cell.textContent.trim(), 10) || 0;
+}
+
+// Cache for `getBlocks()`.
+let cachedBlocks = null;
+
+// Return the rows of the table body, grouped in blocks. A block begins at a
+// top-level row and includes all following child rows up to the next
+// top-level row. The first call reads every row from the DOM. Later calls
+// return the same blocks and do not read the DOM. The counts do not change
+// until the page reloads, so the cached values stay correct. The first call
+// must happen before the rows move, so that the blocks keep the original
+// row order.
+function getBlocks() {
+    if (cachedBlocks !== null) {
+        return cachedBlocks;
+    }
+
+    cachedBlocks = [];
+    let currentBlock = null;
+    Array.from(searchableBody.rows).forEach(row => {
+        // The values have the same indexes as `row.cells`, so that the
+        // `cellIndex` of a sort header selects the value of its column.
+        const entry = { row, values: Array.from(row.cells, cellValue) };
+        if (isTopLevelRow(row)) {
+            currentBlock = { header: entry, children: [] };
+            cachedBlocks.push(currentBlock);
+        } else if (currentBlock) {
+            currentBlock.children.push(entry);
+        }
+    });
+    return cachedBlocks;
 }
 
 function applySort() {
-    const rows = Array.from(searchableBody.rows);
+    const blocks = getBlocks();
 
-    // Read the sort keys from the DOM once per row, so that the comparator
-    // works only on plain values. With no active sort, all values are equal
-    // and the original index alone decides the order.
-    const toEntry = row => ({
-        row,
-        value: sortColumn === null ? 0 : cellValue(row, sortColumn),
-        originalIndex: parseInt(row.dataset.originalIndex, 10),
-    });
-
-    // Partition rows into blocks. A block begins at a top-level row and
-    // includes all following child rows up to the next top-level row.
-    const blocks = [];
-    let currentBlock = null;
-    rows.forEach(row => {
-        if (isTopLevelRow(row)) {
-            currentBlock = { header: toEntry(row), children: [] };
-            blocks.push(currentBlock);
-        } else if (currentBlock) {
-            currentBlock.children.push(toEntry(row));
-        }
-    });
-
-    // Comparator for the current direction, with a stable tie-break on the
-    // original index so equal values keep a deterministic order.
-    const compare = (a, b) => {
-        const delta = a.value - b.value;
-        const ordered = sortDirection === 'asc' ? delta : -delta;
-        return ordered !== 0 ? ordered : a.originalIndex - b.originalIndex;
-    };
-
-    blocks.sort((a, b) => compare(a.header, b.header));
-    blocks.forEach(block => block.children.sort(compare));
+    // With no active sort, use the blocks in their original order.
+    // Otherwise, sort copies of the blocks by the value of the sort column.
+    // `Array.prototype.sort` is stable and the copies start in the original
+    // order, so equal values keep their original order.
+    let orderedBlocks = blocks;
+    if (sortDirection !== null) {
+        const compare = (a, b) => {
+            const delta = a.values[sortColumn] - b.values[sortColumn];
+            return sortDirection === 'asc' ? delta : -delta;
+        };
+        orderedBlocks = blocks
+            .map(block => ({
+                header: block.header,
+                children: block.children.slice().sort(compare),
+            }))
+            .sort((a, b) => compare(a.header, b.header));
+    }
 
     // Collect the rows in the new order in a fragment, then insert the
     // fragment into the table body in a single operation. The rows move
     // with their inline display, so collapse/filter visibility is kept.
     const fragment = document.createDocumentFragment();
-    blocks.forEach(block => {
+    orderedBlocks.forEach(block => {
         fragment.appendChild(block.header.row);
         block.children.forEach(child => fragment.appendChild(child.row));
     });
