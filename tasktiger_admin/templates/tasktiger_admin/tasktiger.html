@@ -120,42 +120,48 @@ function cellValue(row, column) {
 function applySort() {
     const rows = Array.from(searchableBody.rows);
 
+    // Read the sort keys from the DOM once per row, so that the comparator
+    // works only on plain values. With no active sort, all values are equal
+    // and the original index alone decides the order.
+    const toEntry = row => ({
+        row,
+        value: sortColumn === null ? 0 : cellValue(row, sortColumn),
+        originalIndex: parseInt(row.dataset.originalIndex, 10),
+    });
+
     // Partition rows into blocks. A block begins at a top-level row and
     // includes all following child rows up to the next top-level row.
     const blocks = [];
     let currentBlock = null;
     rows.forEach(row => {
         if (isTopLevelRow(row)) {
-            currentBlock = { header: row, children: [] };
+            currentBlock = { header: toEntry(row), children: [] };
             blocks.push(currentBlock);
         } else if (currentBlock) {
-            currentBlock.children.push(row);
+            currentBlock.children.push(toEntry(row));
         }
     });
-
-    const originalIndex = row =>
-        parseInt(row.dataset.originalIndex, 10);
 
     // Comparator for the current direction, with a stable tie-break on the
     // original index so equal values keep a deterministic order.
     const compare = (a, b) => {
-        if (sortDirection === null) {
-            return originalIndex(a) - originalIndex(b);
-        }
-        const delta = cellValue(a, sortColumn) - cellValue(b, sortColumn);
+        const delta = a.value - b.value;
         const ordered = sortDirection === 'asc' ? delta : -delta;
-        return ordered !== 0 ? ordered : originalIndex(a) - originalIndex(b);
+        return ordered !== 0 ? ordered : a.originalIndex - b.originalIndex;
     };
 
     blocks.sort((a, b) => compare(a.header, b.header));
     blocks.forEach(block => block.children.sort(compare));
 
-    // Re-append rows in the new order. appendChild moves nodes, preserving
-    // each row's inline display so collapse/filter visibility is kept.
+    // Collect the rows in the new order in a fragment, then insert the
+    // fragment into the table body in a single operation. The rows move
+    // with their inline display, so collapse/filter visibility is kept.
+    const fragment = document.createDocumentFragment();
     blocks.forEach(block => {
-        searchableBody.appendChild(block.header);
-        block.children.forEach(child => searchableBody.appendChild(child));
+        fragment.appendChild(block.header.row);
+        block.children.forEach(child => fragment.appendChild(child.row));
     });
+    searchableBody.appendChild(fragment);
 }
 
 function updateArrows() {
