@@ -1,5 +1,11 @@
 # Changes
 
+## v0.4.4
+
+* Speed up column sorting on large queue lists. Each queue group renders in
+  its own table body, so a sort moves whole groups and leaves collapsed rows
+  in place.
+
 ## v0.4.3
 
 * Keep the filter and the column sort of the queue list across page reloads.
