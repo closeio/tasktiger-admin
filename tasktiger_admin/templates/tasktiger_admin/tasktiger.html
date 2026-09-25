@@ -21,10 +21,10 @@
     <thead>
         <tr>
             <th></th>
-            <th class="sort-header">Queued <span class="sort-arrow"></span></th>
-            <th class="sort-header">Active <span class="sort-arrow"></span></th>
-            <th class="sort-header">Scheduled <span class="sort-arrow"></span></th>
-            <th class="sort-header">Error <span class="sort-arrow"></span></th>
+            <th class="sort-header" data-sort-key="queued">Queued <span class="sort-arrow"></span></th>
+            <th class="sort-header" data-sort-key="active">Active <span class="sort-arrow"></span></th>
+            <th class="sort-header" data-sort-key="scheduled">Scheduled <span class="sort-arrow"></span></th>
+            <th class="sort-header" data-sort-key="error">Error <span class="sort-arrow"></span></th>
         </tr>
     </thead>
     <tbody class="searchable">
@@ -67,6 +67,7 @@ document.getElementById('task_filter').addEventListener('input', function() {
     debounceTimeout = setTimeout(() => {
         filterRows(this.value);
         updateHeaderDisplay();
+        updateUrl();
     }, 300);
 })
 
@@ -100,6 +101,7 @@ document.querySelectorAll('.sort-header').forEach(header => {
         }
         applySort();
         updateArrows();
+        updateUrl();
     });
 });
 
@@ -190,6 +192,23 @@ function updateArrows() {
     });
 }
 
+// Write the filter and sort state to the URL query string, so that a reload
+// keeps them. replaceState does not add a browser history entry.
+function updateUrl() {
+    const params = new URLSearchParams();
+    const filterValue = document.getElementById('task_filter').value;
+    if (filterValue) {
+        params.set('filter', filterValue);
+    }
+    if (sortColumn !== null) {
+        const header = document.querySelector('.metrics thead tr').cells[sortColumn];
+        params.set('sort', header.dataset.sortKey);
+        params.set('direction', sortDirection);
+    }
+    const query = params.toString();
+    history.replaceState(null, '', query ? `?${query}` : window.location.pathname);
+}
+
 function filterRows(value) {
     const regex = new RegExp(value, 'i');
     const rows = document.querySelectorAll('.searchable tr');
@@ -237,6 +256,24 @@ function updateHeaderDisplay() {
             nextRow = nextRow.nextElementSibling;
         }
     });
+}
+
+// Restore the filter and sort state from the URL query string.
+const urlParams = new URLSearchParams(window.location.search);
+const initialSortHeader = Array.from(document.querySelectorAll('.sort-header'))
+    .find(header => header.dataset.sortKey === urlParams.get('sort'));
+const initialSortDirection = urlParams.get('direction');
+if (initialSortHeader && ['asc', 'desc'].includes(initialSortDirection)) {
+    sortColumn = initialSortHeader.cellIndex;
+    sortDirection = initialSortDirection;
+    applySort();
+    updateArrows();
+}
+const initialFilter = urlParams.get('filter');
+if (initialFilter) {
+    document.getElementById('task_filter').value = initialFilter;
+    filterRows(initialFilter);
+    updateHeaderDisplay();
 }
 
 document.getElementById('task_filter').focus();
